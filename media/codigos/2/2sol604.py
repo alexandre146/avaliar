@@ -1,0 +1,31 @@
+nun1=int(input())
+nun2=int(input())
+nun3=int(input())
+if(nun3>nun2>nun1)and(nun3>nun1):
+    print(nun1)
+    print(nun2)
+    print(nun3)
+elif(nun3<nun2<nun1)and(nun3<nun2):
+    print(nun3)
+    print(nun2)
+    print(nun1)
+elif(nun1<nun2>nun3)and(nun3>nun1):
+    print(nun1)
+    print(nun3)
+    print(nun2)
+elif(nun3<nun2>nun1)and(nun1<nun2):
+    print(nun3)
+    print(nun1)
+    print(nun2)
+elif(nun1>nun3>nun2)and(nun1>nun3):
+    print(nun2)
+    print(nun3)
+    print(nun1)
+elif(nun2>nun1>nun3)and(nun2>nun1):
+    print(nun3)
+    print(nun1)
+    print(nun2)
+elif(nun3>nun1>nun2):
+    print(nun2)
+    print(nun1)
+    print(nun3)

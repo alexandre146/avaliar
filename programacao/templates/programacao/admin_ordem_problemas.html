@@ -1,0 +1,16 @@
+{% extends "base_especialista.html" %}
+
+{% load bootstrap %}
+
+{% block page_title %} Ordem problema {% endblock %}
+
+{% block main %}
+
+{% if ordem %}
+{% for o in ordem %}
+{{ o }}
+{% endfor %}
+{% endif %}
+
+{% endblock %}
+

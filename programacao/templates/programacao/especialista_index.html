@@ -1,0 +1,111 @@
+{% extends "base_especialista_index.html" %}
+
+{% load bootstrap %}
+
+{% block page_title %} Dashboard: Avaliador {% endblock %}
+
+{% block count_problemas %}
+{{ count_problemas }}
+{% endblock %}
+
+{% block count_avaliacoes %}
+{{ count_avaliacoes_realizadas }} / {{ count_avaliacoes_totais }}
+{% endblock %}
+
+{% block count_confirmar_notas %}
+{{ count_confirmar_notas_realizadas }}/{{ count_confirmar_notas_totais }}
+{% endblock %}
+
+{% block count_confirmar_feedback %}
+{{ count_confirmar_feedback_realizadas }}/{{ count_confirmar_feedback_totais }}
+{% endblock %}
+
+{% block instrucoes %}
+<div class="alert alert-info">
+  <strong>Descrição da pesquisa: </strong> 
+	<ul>
+		<li>O Objetivo da pesquisa é minimizar o esforço de avaliação de códigos em disciplinas introdutórias de programação. O intuito é possibilitar que o professor possa avaliar um pequeno conjunto de códigos e que esta avaliação seja generalizada para o restante dos códigos desejados
+		<li>Desta forma, você será solicitado a:
+		<ol>
+			<li> Forneçer seus critérios de avaliação. Utilize o botão <button type="button" class="btn btn-sm btn-primary">Visualizar</button> para observar o enunciado do problema e fornecer seus critérios de avaliação
+			<li> Realizar um conjunto de avaliações. Utilize o botão <button type="button" class="btn btn-sm btn-primary">Avaliar submissões</button> para ver os códigos submetidos e proceder com a avaliação
+			<li> Confirmar notas, ou seja, confirmar se as notas geradas estão corretas de acordo com sua avaliação. (Funcionalidade ainda desablitada)
+			<li> Confirmar feedback, ou seja, confirmar se o feedback textual gerado é aplicável ao código de acordo com sua avaliação. (Funcionalidade ainda desablitada)
+		</ol>
+		<li> <b>O progresso de suas ações ficará salvo, assim é possível proceder com a avaliação em momentos distintos</b>
+		<li> Para cada problema, são solicitadas 10 (dez) avaliações
+		<li> Para cada problema, é necessário confirmar um conjunto de notas. Este conjunto inicial terá 10 elementos, por problema (6 x 10 = 60 confirmações). Posteriormente podem ser solicitadas novas confirmações.
+		<!--Este conjunto tem tamanho máximo de 40 notas (40 notas x 12 problemas = 480). Contudo, uma confirmação poderá servir para vários códigos-->
+		<li> Para cada problema, é necessário confirmar um conjunto de feedback. Este conjunto inicial terá 10 elementos, por problema (6 x 10 = 60 confirmações). Posteriormente podem ser solicitadas novas confirmações. 
+		<!--Este conjunto tem tamanho máximo de 40 feedbacks (40 feedbacks x 12 problemas = 480). Contudo, uma confirmação poderá servir para vários códigos-->
+		<li> Os dados solicitados servirão para avaliar a abordagem proposta no trabalho de doutorado relacionado a pesquisa
+	</ul>
+
+	Desde já agradeço sua disponibilidade.
+</div>
+<!--
+<div class="alert alert-info">
+  <strong>Instruções: </strong> 
+	<ol>
+		<li>Um conjunto de <b>Problemas</b> foi apresentado como exercício para turmas de programação introdutória.
+		<li>O conjunto de <b>Avaliações pendentes</b>, corresponde as soluções propostas pelos alunos de uma turma. 
+        Clique no botão "Visualizar as submissões" e realize a avaliação destes códigos. Para cada avaliação forneça 
+        uma <b>nota</b> (entre 0.0 e 10.0), um <b>feedback</b> (dicas que podem ajudar o aluno) e, 
+        opcionalmente, uma observação (ex. "não realizei a avaliação, pois..." ou "tive a seguinte dúvida no 
+        momento da correção...").
+		<li>Após realizar uma avalição é possível editar as informações das <b> Avaliações realizadas</b>.
+        <li>Ao submeter uma solução um conjunto de testes era excutado sobre o código, era possível observar o resultado da execução e reenviar soluções quantas vezes desejasse.
+		<li>Ao concluir a avaliação de uma turma, serão geradas avaliações automáticas para as outras turmas, a 
+        qualidade destas avaliações será julgada com base nas <b>Confirmações de avaliação</b> fornecidas por você e
+        pelos demais avaliadores especialistas.
+	</ol>
+</div>
+-->
+{% endblock %}
+
+{% block problemas_list %}
+    {% if problemas_list %}
+	<div class="table-responsive">
+		<table class="table table-bordered table-hover table-striped">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Título</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for problema in problemas_list %}
+				<tr>
+					<td class="col-md-1">{{ forloop.counter }}</td>
+					<td class="col-md-5">{{ problema.nome }}</td>
+					<td class="col-md-7">
+						<a href={% url "programacao:especialista_visualizar_problema" problema.id %}>
+						<button type="button" class="btn btn-sm btn-primary">Visualizar</button>
+						</a>
+						<a href={% url "programacao:especialista_listar_avaliacoes" problema.id %}>
+						<button type="button" class="btn btn-sm btn-primary">Avaliar submissões</button>
+						</a>
+						<!--
+						<a href="">
+						<button type="button" class="btn btn-sm btn-primary">Confirmar notas</button>
+						</a>
+						<a href="">
+						<button type="button" class="btn btn-sm btn-primary">Confirmar feedback</button>
+						</a>
+					    -->
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<!-- /.table-responsive -->
+	{% else %}
+		<div class="alert alert-info alert-dismissable">
+		Nenhum problema cadastrado!
+		</div>
+	{% endif %}
+
+{% endblock %}
+

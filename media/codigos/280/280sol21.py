@@ -1,0 +1,5 @@
+a = str(input())
+b = float(input())
+c = float(input())
+s = ((c*0.15)+b)
+print ('%.2f'%s)

@@ -1,0 +1,9 @@
+n=int(input())
+fatorial=1
+while(n!=-1)and(n>=0)and(n<=12):
+    while(n>1):
+        fatorial*=n
+        n=n-1
+    print(fatorial)
+    fatorial=1
+    n=int(input())

@@ -1,0 +1,15 @@
+nun1=int(input())
+nun2=int(input())
+cont=nun1
+cont2=nun2
+if(nun1%2!=0):
+    print(nun1)
+while(cont<cont2):
+    if(cont%2==0):
+        cont+=1
+        print(cont)
+    elif(cont+1==cont2):
+         break
+    else:
+        cont+=2
+        print(cont)

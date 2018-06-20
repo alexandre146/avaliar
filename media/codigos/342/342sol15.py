@@ -1,0 +1,1 @@
+n = int(input())c = 1i = 3while (i < n):    if (i % 3 == 0 and n % i == 0):        c = c + 1    i = i + 1print (c)

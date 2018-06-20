@@ -1,0 +1,1 @@
+a = int(input())b = int(input())d = aif (a < 0):    print ("sem multiplos menores que N")else:    if (a % 5 != 0):        a = (a % 5) + 5    c = 0    while (a <= (b - 5)):        a = a + d     print (a)            

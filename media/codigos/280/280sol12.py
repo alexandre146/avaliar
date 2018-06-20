@@ -1,0 +1,6 @@
+a = int (input())
+b = int (input())
+c = float(input())
+d = "%.2f"%(c)
+e = "%.2f"% (b * c)
+print ("NUMBER = "+ str(a)+"\nSALARY = R$ "+ str(e))

@@ -1,0 +1,1 @@
+n = input()s = float(input())m = float(input())ad = m * 0.15t = s + adprint ("TOTAL =","%.2f" % t)                                                                                                                

@@ -1,0 +1,79 @@
+{% extends "base_especialista.html" %}
+
+{% load bootstrap %}
+
+{% block page_title %} Editar problema {% endblock %}
+
+{% block main %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Dados do problema </br>
+            </div>
+            
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+							<b>Problema: </b> {{ problema.nome }} </br>
+							<!--<b>Turma principal:</b> {{ problema.id_turma_principal }} </br></br>-->
+                            <form method="post">
+                            {% csrf_token %}
+                                {{ form|bootstrap }}
+                                <button type="submit" class="btn btn-sm btn-success">Salvar</button>
+                            </form></br>
+                            <a href={% url "programacao:admin_problema_publicar_codigos" problema.id %}>
+                            <button type="button" class="btn btn-sm btn-primary">Publicar códigos</button>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /.col-lg-12 (nested) -->
+                </div>
+                <!-- /.row (nested) -->
+            </div>
+            <!-- /.panel-body -->
+            <div class="panel-footer">
+
+                {% if codigos %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Arquivo</th>
+                                <th>Publicado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in codigos %}
+                            <tr>
+                                <td class="col-md-1">{{ forloop.counter }}</td>
+                                <td class="col-md-6">{{ c.arquivo|truncatechars:30 }}</td>
+                                <td class="col-md-2">{{ c.publicar }}</td>
+                                <td class="col-md-3"></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+                {% else %}
+                    <div class="alert alert-info alert-dismissable">
+                    Nenhum código cadastrado!
+                    </div>
+                {% endif %}
+
+            </div> 
+            <!-- /.panel-footer -->
+        </div>
+        <!-- /.panel -->
+        
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+{% endblock %}
+

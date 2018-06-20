@@ -1,0 +1,75 @@
+{% extends "base_especialista_index.html" %}
+
+{% load bootstrap %}
+
+{% block page_title %} Descrição do problema e suas submissões {% endblock %}
+
+{% block main %}
+
+<a href={% url "programacao:especialista_index"%}>
+<button type="button" class="btn btn-sm btn-info"><i class="fa fa-chevron-left fa-fw"></i> Voltar</button>
+</a>
+</br></br>
+
+    <div class="row" id="problema">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <i class="fa fa-edit fa-fw"></i> Problema: {{problema.nome}}
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <b>Enunciado</b>
+                            {{problema.enunciado|safe}}
+                        </div>
+                        <!-- /.col-lg-12 -->
+                        <div class="col-lg-12">
+							</br>
+                            <b>Exemplo de entrada</b>
+                            {{problema.entrada|safe}}
+                        </div></br>
+                        <!-- /.col-lg-12 -->
+                        <div class="col-lg-12">
+							</br>
+                            <b>Exemplo de saída</b>
+                            {{problema.saida|safe}}
+                        </div>
+                        <!-- /.col-lg-12 -->
+                        <div class="col-lg-12">
+							</br>
+                            <b>Conteúdos trabalhados</b> </br>
+                            O seguinte conjunto de conteúdos havia sido trabalhado nas aulas anteriores a proposição
+deste problema como um exercício: </br>
+                            {{problema.conteudo|safe}}
+                        </div></br>
+                        <!-- /.col-lg-12 -->
+                        <div class="col-lg-12">
+							</br>
+                            <form method="post">
+                            {% csrf_token %}
+                                {{ form|bootstrap }}
+                                <button type="submit" class="btn btn-sm btn-success">Salvar</button>
+                                <input type='reset' class="btn btn-sm btn-primary" value='Limpar' name='reset'>
+                            </form>                            
+                        </div>
+                        <!-- /.col-lg-12 -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+
+<a href={% url "programacao:especialista_index"%}>
+<button type="button" class="btn btn-sm btn-info"><i class="fa fa-chevron-left fa-fw"></i> Voltar</button>
+</a>
+</br></br>
+
+{% endblock %}
+

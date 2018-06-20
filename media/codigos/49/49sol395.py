@@ -1,0 +1,9 @@
+num1=int(input())
+num2=int(input())
+num3=int(input())
+if(num1!=num2!=num3):
+    print("escaleno")
+elif(num1==num2==num3):
+    print("equilatero")
+else:
+    print("isosceles")
