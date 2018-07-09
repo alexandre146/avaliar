@@ -64,7 +64,7 @@ WSGI_APPLICATION = 'safiraweb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'avaliar',
+        'NAME': 'avaliar-bkp-producao',
         'USER': 'root',
         'PASSWORD': 'root',
     }

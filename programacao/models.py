@@ -76,6 +76,10 @@ class Codigo(models.Model):
     medida_bugs                   = models.FloatField(null=True, blank=True, default=None)
     medida_mi                     = models.FloatField(null=True, blank=True, default=None)
 
+    similaridade_jaccard          = models.FloatField(null=True, blank=True, default=None)
+    similaridade_text             = models.FloatField(null=True, blank=True, default=None)
+    similaridade_tree             = models.FloatField(null=True, blank=True, default=None)
+
     def __unicode__(self):
         return self.arquivo
 
@@ -111,6 +115,7 @@ class Codigo(models.Model):
             return self.medida_distinct_operands / solucao_referencia.medida_distinct_operands
 
     def get_similarity_jaccard(self, solucao_referencia) :
+        '''
         #print("%s %s" % (self.arquivo, solucao_referencia.arquivo))
         sim = 0
         try :
@@ -118,8 +123,11 @@ class Codigo(models.Model):
         except :
             sim = Similaridade.objects.get(codigo_solucao_id=solucao_referencia.id, codigo_referencia_id = self.id, algoritmo = 'Jaccard')
         return sim.coeficiente_similaridade
+        '''
+        return self.similaridade_jaccard
 
     def get_similarity_text_edit_distance(self, solucao_referencia) :
+        '''
         #print("%s %s" % (self.arquivo, solucao_referencia.arquivo))
         sim = 0
         try :
@@ -127,8 +135,11 @@ class Codigo(models.Model):
         except :
             sim = Similaridade.objects.get(codigo_solucao_id=solucao_referencia.id, codigo_referencia_id = self.id, algoritmo = 'TextEdit')
         return sim.coeficiente_similaridade
+        '''
+        return self.similaridade_text
 
     def get_similarity_tree_edit_distance(self, solucao_referencia) :
+        '''
         #print("%s %s" % (self.arquivo, solucao_referencia.arquivo))
         sim = 0
         try :
@@ -136,6 +147,8 @@ class Codigo(models.Model):
         except :
             sim = Similaridade.objects.get(codigo_solucao_id=solucao_referencia.id, codigo_referencia_id = self.id, algoritmo = 'Tree')
         return sim.coeficiente_similaridade
+        '''
+        return self.similaridade_tree
 
     def distancia(self, solucao_referencia, agrupamento) :
         medidas = agrupamento.medidas.split(',')
