@@ -58,8 +58,8 @@ class Codigo(models.Model):
     medida_loc                    = models.FloatField(null=True, blank=True, default=None)
     medida_lloc                   = models.FloatField(null=True, blank=True, default=None)
     medida_sloc                   = models.FloatField(null=True, blank=True, default=None)
-    #medida_comments              = models.FloatField(null=True, blank=True, default=None)
-    #medida_multi                 = models.FloatField(null=True, blank=True, default=None)
+    #medida_comments               = models.FloatField(null=True, blank=True, default=None)
+    #medida_multi                  = models.FloatField(null=True, blank=True, default=None)
     medida_blank                  = models.FloatField(null=True, blank=True, default=None)
     medida_single_comments        = models.FloatField(null=True, blank=True, default=None)
     medida_distinct_operators     = models.FloatField(null=True, blank=True, default=None)
@@ -75,7 +75,6 @@ class Codigo(models.Model):
     medida_time                   = models.FloatField(null=True, blank=True, default=None)
     medida_bugs                   = models.FloatField(null=True, blank=True, default=None)
     medida_mi                     = models.FloatField(null=True, blank=True, default=None)
-
     similaridade_jaccard          = models.FloatField(null=True, blank=True, default=None)
     similaridade_text             = models.FloatField(null=True, blank=True, default=None)
     similaridade_tree             = models.FloatField(null=True, blank=True, default=None)
