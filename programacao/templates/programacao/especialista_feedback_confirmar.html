@@ -94,12 +94,12 @@
                             <form method="post">
                             {% csrf_token %}
                                 {{ form|bootstrap }}
-                                <a href={% url "programacao:especialista_feedback_confirmar_avaliacao" avaliacao.id %}>
+                                <a href={% url "programacao:especialista_feedback_confirmar" avaliacao.id %}>
                                 <button title='A nota gerada está correta' type="submit" class="btn btn-sm btn-success">Confirmar feedback</button>
                                 </a>
                                 <!--<a href={% url "programacao:especialista_confirmar_nova_avaliacao" 
                                 avaliacao.id %}>-->
-                                <a href={% url "programacao:especialista_feedback_confirmar_avaliacao" avaliacao.id %}>
+                                <a href={% url "programacao:especialista_feedback_confirmar" avaliacao.id %}>
                                 <button title='A nota gerada NÃO é correta, é necessário salvar a nova nota' type="submit" class="btn btn-sm btn-danger">Salvar novo feedback</button>
                                 </a>
                             </form>

@@ -711,7 +711,7 @@ def especialista_feedback_listar_confirmacoes(request, pk, template_name='progra
 
 @login_required
 @permission_required('programacao.view_especialista')
-def especialista_feedback_confirmar_avaliacao(request, pk, template_name='programacao/especialista_feedback_confirmar.html'):
+def especialista_feedback_confirmar(request, pk, template_name='programacao/especialista_feedback_confirmar.html'):
     avaliacao = get_object_or_404(AvaliacaoEspecialista, pk=pk)
     form = AvaliacaoEspecialistaConfirmarFeedbackForm(request.POST or None, instance=avaliacao)
 

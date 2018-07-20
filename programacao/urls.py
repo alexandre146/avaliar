@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^especialista/nota/confirmar/lista/(?P<pk>\d+)$', views.especialista_nota_listar_confirmacoes, name='especialista_nota_listar_confirmacoes'),
     url(r'^especialista/nota/confirmar/(?P<pk>\d+)$', views.especialista_nota_confirmar, name='especialista_nota_confirmar'),
     url(r'^especialista/feedback/confirmar/lista/(?P<pk>\d+)$', views.especialista_feedback_listar_confirmacoes, name='especialista_feedback_listar_confirmacoes'),
-    url(r'^especialista/feedback/confirmar/(?P<pk>\d+)$', views.especialista_feedback_confirmar_avaliacao, name='especialista_feedback_confirmar_avaliacao'),
+    url(r'^especialista/feedback/confirmar/(?P<pk>\d+)$', views.especialista_feedback_confirmar, name='especialista_feedback_confirmar'),
     # Admin
     url(r'^admin/$', views.admin_index, name='admin_index'),
     url(r'^admin/ordem/problemas/$', views.admin_ordem_problemas, name='admin_ordem_problemas'),
