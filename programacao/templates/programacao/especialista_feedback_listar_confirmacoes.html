@@ -57,7 +57,7 @@
 										<td class="col-md-1">{{ forloop.counter }}</td>
 										<td class="col-md-6">{{ avaliacao.codigo.arquivo }}</td>
 										<td class="col-md-2"> 
-										<a href={% url "programacao:especialista_confirmar_avaliacao_feedback" avaliacao.id %}>
+										<a href={% url "programacao:especialista_feedback_confirmar_avaliacao" avaliacao.id %}>
 										<button type="button" class="btn btn-sm btn-primary">Observar avalição</button>
 										</a>
 										</td>
@@ -67,7 +67,7 @@
 										<td class="col-md-1">{{ forloop.counter }}</td>
 										<td class="col-md-6">{{ avaliacao.codigo.arquivo }}</td>
 										<td class="col-md-2"> 
-										<a href={% url "programacao:especialista_confirmar_avaliacao_feedback" avaliacao.id %}>
+										<a href={% url "programacao:especialista_feedback_confirmar_avaliacao" avaliacao.id %}>
 										<button type="button" class="btn btn-sm btn-primary">Observar avalição</button>
 										</a>
 										</td>
@@ -152,7 +152,7 @@
     </div>
     <!-- /.row -->
 
-<a href={% url "programacao:especialista_index"%}>
+<a href={% url "programacao:especialista_index" %}>
 <button type="button" class="btn btn-sm btn-info"><i class="fa fa-chevron-left fa-fw"></i> Voltar</button>
 </a>
 </br></br>

@@ -487,7 +487,7 @@ def especialista_editar_avaliacao(request, pk, template_name='programacao/especi
 
 @login_required
 @permission_required('programacao.view_especialista')
-def especialista_listar_confirmacoes(request, pk, template_name='programacao/especialista_listar_confirmacoes.html'):
+def especialista_nota_listar_confirmacoes(request, pk, template_name='programacao/especialista_nota_listar_confirmacoes.html'):
     problema = get_object_or_404(Problema, pk=pk)
 
     user = request.user
@@ -629,7 +629,7 @@ def especialista_listar_confirmacoes(request, pk, template_name='programacao/esp
 
 @login_required
 @permission_required('programacao.view_especialista')
-def especialista_confirmar_avaliacao(request, pk, template_name='programacao/especialista_confirmar.html'):
+def especialista_nota_confirmar(request, pk, template_name='programacao/especialista_nota_confirmar.html'):
 #    user = request.user
 #    especialista = Especialista.objects.get(user_id=user.id)
 #    codigo = Codigo.objects.get(id=pk)
@@ -647,7 +647,7 @@ def especialista_confirmar_avaliacao(request, pk, template_name='programacao/esp
             avaliacao_especialista.gerada = True
             avaliacao_especialista.confirmar_nota = True
             avaliacao_especialista.save()
-            return redirect('programacao:especialista_listar_confirmacoes', pk=avaliacao.codigo.problema_id)
+            return redirect('programacao:especialista_nota_listar_confirmacoes', pk=avaliacao.codigo.problema_id)
 
     data = {}
     data['avaliacao'] = avaliacao
@@ -658,7 +658,7 @@ def especialista_confirmar_avaliacao(request, pk, template_name='programacao/esp
 
 @login_required
 @permission_required('programacao.view_especialista')
-def especialista_listar_confirmacoes_feedback(request, pk, template_name='programacao/especialista_listar_confirmacoes_feedback.html'):
+def especialista_feedback_listar_confirmacoes(request, pk, template_name='programacao/especialista_feedback_listar_confirmacoes.html'):
     problema = get_object_or_404(Problema, pk=pk)
 
     user = request.user
@@ -711,7 +711,7 @@ def especialista_listar_confirmacoes_feedback(request, pk, template_name='progra
 
 @login_required
 @permission_required('programacao.view_especialista')
-def especialista_confirmar_avaliacao_feedback(request, pk, template_name='programacao/especialista_confirmar_feedback.html'):
+def especialista_feedback_confirmar_avaliacao(request, pk, template_name='programacao/especialista_feedback_confirmar.html'):
     avaliacao = get_object_or_404(AvaliacaoEspecialista, pk=pk)
     form = AvaliacaoEspecialistaConfirmarFeedbackForm(request.POST or None, instance=avaliacao)
 
@@ -723,7 +723,7 @@ def especialista_confirmar_avaliacao_feedback(request, pk, template_name='progra
             avaliacao_especialista.gerada = True
             avaliacao_especialista.confirmar_feedback = True
             avaliacao_especialista.save()
-            return redirect('programacao:especialista_listar_confirmacoes_feedback', pk=avaliacao.codigo.problema_id)
+            return redirect('programacao:especialista_feedback_listar_confirmacoes', pk=avaliacao.codigo.problema_id)
 
     data = {}
     data['avaliacao'] = avaliacao
