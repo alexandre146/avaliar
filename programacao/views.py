@@ -12,7 +12,6 @@ import random
 import numpy as np
 from scipy.cluster.vq import kmeans, vq
 
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -24,7 +23,7 @@ from django.db import connection, transaction
 from django.db.transaction import commit
 from django.shortcuts import render, redirect, get_object_or_404
 
-from programacao.forms import EspecialistaForm, RegistroForm, UserEditForm, AvaliacaoEspecialistaForm, AvaliacaoEspecialistaConfirmarNotaForm, ProblemaForm, CriterioBasicoEspecialistaForm, CriterioDecisaoEspecialistaForm, CriterioRepeticaoEspecialistaForm
+from programacao.forms import EspecialistaForm, RegistroForm, UserEditForm, AvaliacaoEspecialistaForm, AvaliacaoEspecialistaConfirmarNotaForm, AvaliacaoEspecialistaConfirmarFeedbackForm, ProblemaForm, CriterioBasicoEspecialistaForm, CriterioDecisaoEspecialistaForm, CriterioRepeticaoEspecialistaForm
 from programacao.models import Problema, Codigo, Especialista, AvaliacaoEspecialista, Agrupamento, AvaliacaoAgrupamento, Similaridade, CriterioEspecialista, Grupo, GrupoCodigo
 
 def index(request, template_name='programacao/index.html'):
@@ -649,6 +648,84 @@ def especialista_confirmar_avaliacao(request, pk, template_name='programacao/esp
             avaliacao_especialista.confirmar_nota = True
             avaliacao_especialista.save()
             return redirect('programacao:especialista_listar_confirmacoes', pk=avaliacao.codigo.problema_id)
+
+    data = {}
+    data['avaliacao'] = avaliacao
+    data['source'] = source
+    data['form'] = form
+    return render(request, template_name, data)
+
+
+@login_required
+@permission_required('programacao.view_especialista')
+def especialista_listar_confirmacoes_feedback(request, pk, template_name='programacao/especialista_listar_confirmacoes_feedback.html'):
+    problema = get_object_or_404(Problema, pk=pk)
+
+    user = request.user
+    especialista = Especialista.objects.get(user_id=user.id)
+
+    # avaliacoes ainda nao foram concluidas
+    avaliacoes_realizadas = AvaliacaoEspecialista.objects.filter(codigo__problema=problema,especialista=especialista,realizada=True).count()
+    if (avaliacoes_realizadas < 10) :
+        messages.add_message(request, messages.ERROR, 'É necessário concluir as avaliações antes de realizar confirmações')
+        return redirect('programacao:especialista_listar_avaliacoes', pk=problema.id)
+
+    grupos = Grupo.objects.filter(problema=problema,especialista=especialista)
+    if (len(grupos) == 0) : # grupos nao foram criados...
+        messages.add_message(request, messages.ERROR, 'É necessário confirmar as notas antes de realizar as confirmações de feedback')
+        return redirect('programacao:especialista_listar_avaliacoes', pk=problema.id)        
+    else : # grupos foram criados...
+        # Gerar feedbacks...
+        for g in grupos :
+            codigos_no_grupo = GrupoCodigo.objects.filter(grupo__num_idx=g.num_idx,codigo__problema=problema,especialista=especialista)
+
+            codigos_com_avaliacao = []
+            codigos_sem_avaliacao = []
+            for cg in codigos_no_grupo :
+                avaliacao_codigo = AvaliacaoEspecialista.objects.get(codigo=cg.codigo,especialista=especialista)
+                if (avaliacao_codigo.realizada) :
+                    codigos_com_avaliacao.append(avaliacao_codigo)
+                else :
+                    codigos_sem_avaliacao.append(avaliacao_codigo)
+
+            for csa in codigos_sem_avaliacao :
+                if (len(codigos_com_avaliacao) > 0) :
+                    csa.feedback = codigos_com_avaliacao[0].feedback
+                else :
+                    csa.feedback = (csa.codigo.distancia(especialista)).feedback
+                csa.gerada = True
+                csa.save()
+
+    #else :
+
+    codigos_confirmados = AvaliacaoEspecialista.objects.filter(codigo__problema=problema,especialista=especialista,codigo__publicar_confirmar=True,confirmar_feedback=True,realizada=False).order_by('ordem_codigo')
+    codigos_pendentes = AvaliacaoEspecialista.objects.filter(codigo__problema=problema,especialista=especialista,codigo__publicar_confirmar=True,confirmar_feedback=False,realizada=False).order_by('ordem_codigo')
+
+    data = {}
+    #data['form'] = form
+    data['problema'] = problema
+    data['codigos_pendentes'] = codigos_pendentes
+    data['codigos_confirmados'] = codigos_confirmados
+    return render(request, template_name, data)
+
+
+@login_required
+@permission_required('programacao.view_especialista')
+def especialista_confirmar_avaliacao_feedback(request, pk, template_name='programacao/especialista_confirmar_feedback.html'):
+    avaliacao = get_object_or_404(AvaliacaoEspecialista, pk=pk)
+    form = AvaliacaoEspecialistaConfirmarFeedbackForm(request.POST or None, instance=avaliacao)
+
+    source = avaliacao.codigo.display_text()
+    
+    if request.method=='POST':
+        if form.is_valid():
+            avaliacao_especialista = form.save(commit=False)
+            avaliacao_especialista.realizada = False
+            avaliacao_especialista.gerada = True
+            avaliacao_especialista.confirmar_feedback = True
+            avaliacao_especialista.save()
+            
+            return redirect('programacao:especialista_listar_confirmacoes_feedback', pk=avaliacao.codigo.problema_id)
 
     data = {}
     data['avaliacao'] = avaliacao

@@ -73,6 +73,15 @@ class AvaliacaoEspecialistaConfirmarNotaForm(ModelForm):
             'nova_nota': forms.NumberInput(attrs={'step': "0.5"}),
         }
 
+class AvaliacaoEspecialistaConfirmarFeedbackForm(ModelForm):
+    class Meta:
+        model = AvaliacaoEspecialista
+        fields = ['feedback', 'novo_feedback', 'adequacao']
+        widgets = {
+            'feedback': forms.Textarea(attrs={'rows':5, 'cols':200}),
+            'novo_feedback': forms.Textarea(attrs={'rows':5, 'cols':200}),
+        }
+
 
 class ProblemaForm(ModelForm):
     class Meta:

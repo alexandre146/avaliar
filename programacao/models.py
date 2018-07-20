@@ -367,6 +367,8 @@ class AvaliacaoEspecialista(models.Model):
     #confirmar_novo_feedback = models.BooleanField(default=False)
     nova_nota          = models.FloatField(null=True, blank=True, default=None, validators=[valida_avaliacao])
     novo_feedback      = models.TextField(max_length=1000, null=True, blank=True, default=None)
+    CHOICES_FEEDBACK   = (("0","Feedback gerado NÃO é adequado"),("1","Feedback gerado é PARCIALMENTE adequado"),("2","Feedback gerado é TOTALMENTE adequado"))
+    adequacao          = models.CharField(choices=CHOICES_FEEDBACK,default=None,max_length=50,blank=True,null=True)
 
     def __unicode__(self):
         return ("%s avaliou %s como %.2f" % (self.especialista, self.codigo, self.avaliacao))

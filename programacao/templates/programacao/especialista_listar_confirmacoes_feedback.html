@@ -21,38 +21,20 @@
 </br></br>
 
 <div class="alert alert-info">
+	Um conjunto de avaliações foi gerado com base nas avaliações fornecidas. <br>
+	Nesta etapa é necessário confirmar se a avaliação gerada é correta, ou se outra avaliação seria necessária. <br><br>
   <strong>Instruções: </strong> 
     <ol>
-        <li>Um conjunto de avaliações pendentes é apresentado, realize a avaliação do código clicando no botão "Avaliar" e proceda de acordo com as instruções
-        <li>Um conjunto de avaliações realizadas é apresentado ao final da página, caso deseje alterar a avaliação do código, clique no botão "Editar" e proceda de acordo com as instruções
+        <li>Um conjunto de confirmações pendentes é apresentado, realize a confirmação da avaliação do código clicando no botão <button type="button" class="btn btn-sm btn-primary">Observar avalição</button> e proceda de acordo com as instruções
+        <li>Um conjunto de confirmações realizadas é apresentado ao final da página. <!--, caso deseje alterar a avaliação do código, clique no botão "Editar" e proceda de acordo com as instruções-->
     </ol>
 </div>
-
-        <div class="row">
-            <div class="col-lg-10 col-md-offset-1">
-            {% for message in messages %}
-                {% if 'error' in message.tags %}
-                    <div class="alert alert-danger alert-dismissable">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        {{ message }}
-                    </div>
-                {% endif %}
-                {% if 'info' in message.tags %}
-                    <div class="alert alert-info alert-dismissable">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        {{ message }}
-                    </div>
-                {% endif %}
-            {% endfor %}
-            <!-- /.col-lg-4 -->
-        </div>
-        <!-- /.row -->
 
     <div class="row" id="avaliacoes_pendentes">
         <div class="col-lg-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <i class="fa fa-edit fa-fw"></i> Avaliacoes pendentes
+                    <i class="fa fa-edit fa-fw"></i> Confirmações pendentes
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
@@ -69,24 +51,24 @@
 									</tr>
 								</thead>
 								<tbody>
-								{% for codigo in codigos_pendentes %}
+								{% for avaliacao in codigos_pendentes %}
 									{% if forloop.counter == 1 %}
 									<tr>
 										<td class="col-md-1">{{ forloop.counter }}</td>
-										<td class="col-md-9">{{ codigo.arquivo }}</td>
+										<td class="col-md-6">{{ avaliacao.codigo.arquivo }}</td>
 										<td class="col-md-2"> 
-										<a href={% url "programacao:especialista_avaliar" codigo.id %}>
-										<button type="button" class="btn btn-sm btn-primary">Avaliar</button>
+										<a href={% url "programacao:especialista_confirmar_avaliacao_feedback" avaliacao.id %}>
+										<button type="button" class="btn btn-sm btn-primary">Observar avalição</button>
 										</a>
 										</td>
 									</tr>
 									{% else %}
 									<tr>
 										<td class="col-md-1">{{ forloop.counter }}</td>
-										<td class="col-md-9">{{ codigo.arquivo }}</td>
+										<td class="col-md-6">{{ avaliacao.codigo.arquivo }}</td>
 										<td class="col-md-2"> 
-										<a href={% url "programacao:especialista_avaliar" codigo.id %}>
-										<button type="button" class="btn btn-sm btn-primary" disabled>Avaliar</button>
+										<a href={% url "programacao:especialista_confirmar_avaliacao_feedback" avaliacao.id %}>
+										<button type="button" class="btn btn-sm btn-primary">Observar avalição</button>
 										</a>
 										</td>
 									</tr>
@@ -98,7 +80,7 @@
 						<!-- /.table-responsive -->
 						{% else %}
 							<div class="alert alert-info alert-dismissable">
-							Nenhuma avaliação pendente!
+							Nenhuma confirmação de avaliação pendente!
 							</div>
 						{% endif %}
                         </div>
@@ -118,37 +100,35 @@
         <div class="col-lg-12">
             <div class="panel panel-green">
                 <div class="panel-heading">
-                    <i class="fa fa-edit fa-fw"></i> Avaliacoes realizadas
+                    <i class="fa fa-edit fa-fw"></i> Confirmações realizadas
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-lg-12">
-						{% if codigos_avaliados %}
+						{% if codigos_confirmados %}
 						<div class="table-responsive">
 							<table class="table table-bordered table-hover table-striped">
 								<thead>
 									<tr>
 									<th>#</th>
 									<th>Arquivo</th>
-									<th>Avaliação</th>
 									<th>Feedback</th>
-									<th></th>
+									<th>Novo feedback</th>
 									</tr>
 								</thead>
 								<tbody>
-								{% for avaliacao in codigos_avaliados %}
+								{% for avaliacao in codigos_confirmados %}
 								<tr>
 									<td class="col-md-1">{{ forloop.counter }}</td>
 									<td class="col-md-3">{{ avaliacao.codigo.arquivo }}</td>
-									<td class="col-md-3">{{ avaliacao.nota|floatformat:2 }}</td>
 									<td class="col-md-3">{{ avaliacao.feedback }}</td>
-									<td class="col-md-2"> 
-									<a href={% url "programacao:especialista_editar_avaliacao" avaliacao.id %}>
+									<td class="col-md-3"> {{ avaliacao.novo_feedback }}</td>
+									<!--<a href={% url "programacao:especialista_editar_avaliacao" avaliacao.id %}>
 									<button type="button" class="btn btn-sm btn-primary">Editar</button>
-									</a>
+									</a>-->
 									</td>
-								</tr>
+								</tr>                                         
 								{% endfor %}
 								</tbody>
 							</table>
@@ -156,7 +136,7 @@
 						<!-- /.table-responsive -->
 						{% else %}
 							<div class="alert alert-info alert-dismissable">
-							Nenhuma avaliação realizada!
+							Nenhuma confirmação de avaliação realizada!
 							</div>
 						{% endif %}
                         </div>

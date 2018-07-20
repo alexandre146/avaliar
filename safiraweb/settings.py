@@ -61,22 +61,22 @@ WSGI_APPLICATION = 'safiraweb.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'avaliar-bkp-producao',
-#        'USER': 'root',
-#        'PASSWORD': 'root',
-#    }
-#}
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'safira_avaliar',
-        'USER': 'avaliar',
-        'PASSWORD': 'aabnmd2334',
+        'NAME': 'avaliar',
+        'USER': 'root',
+        'PASSWORD': 'root',
     }
 }
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'safira_avaliar',
+#        'USER': 'avaliar',
+#        'PASSWORD': 'aabnmd2334',
+#    }
+#}
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',

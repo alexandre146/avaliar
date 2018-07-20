@@ -10,7 +10,7 @@
 
 {% if codigo %}
 
-<a href={% url "programacao:especialista_listar_confirmacoes" codigo.problema.id %}>
+<a href={% url "programacao:especialista_listar_confirmacoes_feedback" codigo.problema.id %}>
 <button type="button" class="btn btn-sm btn-info"><i class="fa fa-chevron-left fa-fw"></i> Voltar</button>
 </a>
 </br></br>
@@ -19,7 +19,7 @@
     <div class="col-lg-12">
 		<div class="alert alert-info">
           <b>Instruções:</b>
-		  <ul>
+          <ul>
             <li> Observe a avaliação do código, utilize um dos seguintes botões
             <li> <button title='A nota gerada está correta' type="submit" class="btn btn-sm btn-success">Confirmar nota</button> Caso a nota gerada seja correta para o código.
             <li> <button title='A nota gerada NÃO é correta, é necessário salvar a nova nota' type="submit" class="btn btn-sm btn-danger">Salvar nova nota</button> Caso a nota gerada NÃO seja correta, dessa forma é necessário fornecer uma nova nota
@@ -94,13 +94,13 @@
                             <form method="post">
                             {% csrf_token %}
                                 {{ form|bootstrap }}
-                                <a href={% url "programacao:especialista_confirmar_avaliacao" avaliacao.id %}>
-                                <button title='A nota gerada está correta' type="submit" class="btn btn-sm btn-success">Confirmar nota</button>
+                                <a href={% url "programacao:especialista_confirmar_avaliacao_feedback" avaliacao.id %}>
+                                <button title='A nota gerada está correta' type="submit" class="btn btn-sm btn-success">Confirmar feedback</button>
                                 </a>
                                 <!--<a href={% url "programacao:especialista_confirmar_nova_avaliacao" 
                                 avaliacao.id %}>-->
-                                <a href={% url "programacao:especialista_confirmar_avaliacao" avaliacao.id %}>
-                                <button title='A nota gerada NÃO é correta, é necessário salvar a nova nota' type="submit" class="btn btn-sm btn-danger">Salvar nova nota</button>
+                                <a href={% url "programacao:especialista_confirmar_avaliacao_feedback" avaliacao.id %}>
+                                <button title='A nota gerada NÃO é correta, é necessário salvar a nova nota' type="submit" class="btn btn-sm btn-danger">Salvar novo feedback</button>
                                 </a>
                             </form>
                         </div>
@@ -122,7 +122,7 @@
 </div>
 <!-- /.row -->
 
-<a href={% url "programacao:especialista_listar_confirmacoes" avaliacao.codigo.problema_id %}>
+<a href={% url "programacao:especialista_listar_confirmacoes_feedback" avaliacao.codigo.problema_id %}>
 <button type="button" class="btn btn-sm btn-info"><i class="fa fa-chevron-left fa-fw"></i> Voltar</button>
 </a>
 </br></br>
