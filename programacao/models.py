@@ -22,6 +22,43 @@ class Problema(models.Model):
     def __unicode__(self):
         return self.nome
 
+
+    def get_criterios(self):
+        criterios = CriterioEspecialista()
+
+        # Basico
+        criterios.criterio_sintaxe = True
+        criterios.criterio_funcional  = True
+        criterios.criterio_qtd_variaveis  = True
+        criterios.criterio_qtd_atribuicoes  = True
+        criterios.criterio_qtd_instrucoes  = True
+        criterios.criterio_operadores  = True
+        criterios.criterio_funcoes_io  = True
+        criterios.criterio_tamanho  = True
+        criterios.criterio_comentarios  = True
+        criterios.criterio_similaridade_ref  = True
+        if (self.tipo == 'Decisao' or self.tipo== 'Repeticao') :
+            # Decisão
+            criterios.criterio_estrutura_decisao  = True
+            criterios.criterio_qtd_decisoes  = True
+            criterios.criterio_profundidade_decisao  = True
+            criterios.criterio_decisoes_aninhadas   = True
+            criterios.criterio_decisoes_compostas  = True
+            criterios.criterio_decisoes_aninhadas  = True
+            criterios.criterio_qtd_condicoes  = True
+            criterios.criterio_operadores_logicos  = True
+            criterios.criterio_qtd_operadores_logicos  = True
+        if (self.tipo== 'Repeticao') :
+            # Repetição
+            criterios.criterio_estrutura_repeticao = True
+            criterios.criterio_qtd_est_repeticao = True
+            criterios.criterio_profundidade_repeticao = True
+            criterios.criterio_repeticoes_aninhadas = True
+            criterios.criterio_eficiencia_tempo = True
+            criterios.criterio_eficiencia_memoria  = True
+
+        return criterios
+
 '''
     def avaliacao_concluida(self):
         if self.get_count_avaliacoes_pendentes() == 0 :
@@ -42,6 +79,7 @@ class Problema(models.Model):
         return Codigo.objects.filter(problema_id=self.id, id_turma!=self.id_turma_principal).count()
 '''
 
+
 class Codigo(models.Model):
     arquivo           = models.CharField(max_length=100)
     referencia        = models.BooleanField(default=False)
@@ -49,6 +87,7 @@ class Codigo(models.Model):
     linguagem         = models.CharField(choices=CHOICES_LINGUAGEM,default=None,max_length=50,blank=True,null=True)
     problema          = models.ForeignKey('Problema',default=None)
     publicar          = models.BooleanField(default=False)
+    publicar_confirmar= models.BooleanField(default=False)
 
     medidas_ok        = models.BooleanField(default=False)
     # medidas
@@ -58,8 +97,8 @@ class Codigo(models.Model):
     medida_loc                    = models.FloatField(null=True, blank=True, default=None)
     medida_lloc                   = models.FloatField(null=True, blank=True, default=None)
     medida_sloc                   = models.FloatField(null=True, blank=True, default=None)
-    #medida_comments               = models.FloatField(null=True, blank=True, default=None)
-    #medida_multi                  = models.FloatField(null=True, blank=True, default=None)
+    #medida_comments              = models.FloatField(null=True, blank=True, default=None)
+    #medida_multi                 = models.FloatField(null=True, blank=True, default=None)
     medida_blank                  = models.FloatField(null=True, blank=True, default=None)
     medida_single_comments        = models.FloatField(null=True, blank=True, default=None)
     medida_distinct_operators     = models.FloatField(null=True, blank=True, default=None)
@@ -75,6 +114,7 @@ class Codigo(models.Model):
     medida_time                   = models.FloatField(null=True, blank=True, default=None)
     medida_bugs                   = models.FloatField(null=True, blank=True, default=None)
     medida_mi                     = models.FloatField(null=True, blank=True, default=None)
+
     similaridade_jaccard          = models.FloatField(null=True, blank=True, default=None)
     similaridade_text             = models.FloatField(null=True, blank=True, default=None)
     similaridade_tree             = models.FloatField(null=True, blank=True, default=None)
@@ -149,7 +189,57 @@ class Codigo(models.Model):
         '''
         return self.similaridade_tree
 
-    def distancia(self, solucao_referencia, agrupamento) :
+    def distancia(self, especialista) :
+        criterios = None
+        try :
+            criterios = CriterioEspecialista.objects.get(problema=self.problema, especialista=especialista)
+        except CriterioEspecialista.DoesNotExist:
+            criterios = self.problema.get_criterios()
+
+        avaliacoes = AvaliacaoEspecialista.objects.filter(codigo__problema=self.problema, especialista=especialista, realizada=True)
+        
+        menor_distancia = -1
+        avaliacao_proxima = None
+
+        from math import sqrt, pow
+
+        for a in avaliacoes :
+            # Criterios nao utilizados: criterio_funcoes_io  / criterio_eficiencia_tempo      
+            distancia = 0
+            if (criterios.criterio_funcional) :
+                distancia = distancia + (sqrt( pow(self.medida_corretude_funcional- a.codigo.medida_corretude_funcional, 2) ))
+            if (criterios.criterio_estrutura_decisao or criterios.criterio_qtd_decisoes or criterios.criterio_profundidade_decisao or criterios.criterio_decisoes_aninhadas or criterios.criterio_decisoes_compostas or criterios.criterio_estrutura_repeticao or criterios.criterio_qtd_est_repeticao or criterios.criterio_profundidade_repeticao or criterios.criterio_repeticoes_aninhadas) :
+                distancia = distancia + (sqrt( pow(self.medida_complexity - a.codigo.medida_complexity, 2) ))
+            if (criterios.criterio_qtd_instrucoes or criterios.criterio_tamanho) :
+                distancia = distancia + (sqrt( pow(self.medida_loc - a.codigo.medida_loc, 2) ))
+            if (criterios.criterio_qtd_instrucoes or criterios.criterio_tamanho or criterios.criterio_qtd_instrucoes) :  
+                distancia = distancia + (sqrt( pow(self.medida_sloc - a.codigo.medida_sloc, 2) ))
+            if (criterios.criterio_qtd_atribuicoes or criterios.criterio_operadores or criterios.criterio_qtd_instrucoes or criterios.criterio_operadores_logicos or criterios.criterio_qtd_operadores_logicos) :
+                distancia = distancia + (sqrt( pow(self.medida_distinct_operators - a.codigo.medida_distinct_operators, 2) ))
+            if (criterios.criterio_qtd_variaveis or criterios.criterio_eficiencia_memoria or criterios.criterio_qtd_instrucoes or criterios.criterio_qtd_condicoes) :
+                distancia = distancia + (sqrt( pow(self.medida_distinct_operands - a.codigo.medida_distinct_operands, 2) ))
+            if (criterios.criterio_qtd_atribuicoes or criterios.criterio_operadores or criterios.criterio_qtd_instrucoes or criterios.criterio_operadores_logicos or criterios.criterio_qtd_operadores_logicos) :
+                distancia = distancia + (sqrt( pow(self.medida_total_number_operators - a.codigo.medida_total_number_operators, 2) ))
+            if (criterios.criterio_qtd_variaveis or criterios.criterio_eficiencia_memoria or criterios.criterio_qtd_instrucoes or criterios.criterio_qtd_condicoes)  :    
+                distancia = distancia + (sqrt( pow(self.medida_total_number_operands - a.codigo.medida_total_number_operands, 2) ))
+            if (criterios.criterio_qtd_instrucoes or criterios.criterio_tamanho or criterios.criterio_qtd_condicoes) :
+                distancia = distancia + (sqrt( pow(self.medida_vocabulary - a.codigo.medida_vocabulary, 2) ))
+            if (criterios.criterio_tamanho) :
+                distancia = distancia + (sqrt( pow(self.medida_length - a.codigo.medida_length, 2) ))
+            if (criterios.criterio_tamanho) :
+                distancia = distancia + (sqrt( pow(self.medida_volume - a.codigo.medida_volume, 2) ))
+            if (criterios.criterio_similaridade_ref) :
+                distancia = distancia + (sqrt( pow(self.similaridade_jaccard - a.codigo.similaridade_jaccard, 2) ))
+            if (criterios.criterio_similaridade_ref) :
+                distancia = distancia + (sqrt( pow(self.similaridade_text - a.codigo.similaridade_text, 2) ))
+            #if (criterios.criterio_similaridade_ref) :
+            #   distancia = distancia + (sqrt( pow(self.similaridade_tree) - pow(a.codigo.similaridade_tree) ))
+            if (menor_distancia == -1 or distancia < menor_distancia) :
+                menor_distancia = distancia
+                avaliacao_proxima = a
+        return avaliacao_proxima
+
+        '''
         medidas = agrupamento.medidas.split(',')
         distancia = 0
         for medida in medidas :
@@ -167,7 +257,9 @@ class Codigo(models.Model):
                 distancia = distancia + 1 - self.get_distinct_operators(solucao_referencia, 1)
             if medida == 'distinct_operands':
                 distancia = distancia + 1 - self.get_distinct_operands(solucao_referencia, 1)
-        return distancia/len(medidas)
+        return distancia/len(criterios)
+        '''
+
 
 
 class Similaridade(models.Model):
@@ -265,11 +357,14 @@ class AvaliacaoEspecialista(models.Model):
     ordem_codigo       = models.IntegerField(null=True, blank=True, default=None)
     especialista       = models.ForeignKey('Especialista')
     realizada          = models.BooleanField(default=False)
+    gerada             = models.BooleanField(default=False)
     nota               = models.FloatField(null=True, blank=True, default=None, validators=[valida_avaliacao])
     feedback           = models.TextField(max_length=1000, null=True, blank=True, default=None)
     observacao         = models.TextField(max_length=1000, null=True, blank=True, default=None)
     confirmar_nota     = models.BooleanField(default=False)
+    #confirmar_nova_nota= models.BooleanField(default=False)
     confirmar_feedback = models.BooleanField(default=False)
+    #confirmar_novo_feedback = models.BooleanField(default=False)
     nova_nota          = models.FloatField(null=True, blank=True, default=None, validators=[valida_avaliacao])
     novo_feedback      = models.TextField(max_length=1000, null=True, blank=True, default=None)
 
@@ -278,6 +373,24 @@ class AvaliacaoEspecialista(models.Model):
 
     def get_absolute_url(self):
         return reverse(viewname='programacao:especialista_avaliar', kwargs={'pk': self.pk})
+
+
+class Grupo(models.Model):
+    num_idx      = models.IntegerField(null=True, blank=True, default=None)
+    problema     = models.ForeignKey('Problema')
+    especialista = models.ForeignKey('Especialista')
+
+    def __unicode__(self):
+        return "%s %s %s" % (self.num_idx, self.problema, self.especialista)
+
+
+class GrupoCodigo(models.Model):
+    grupo        = models.ForeignKey('Grupo')
+    codigo       = models.ForeignKey('Codigo')
+    especialista = models.ForeignKey('Especialista')
+
+    def __unicode__(self):
+        return "%s %s %s" % (self.grupo, self.codigo, self.especialista)
 
 
 class Agrupamento(models.Model):

@@ -18,6 +18,8 @@ urlpatterns = patterns('',
     url(r'^especialista/avaliar/(?P<pk>\d+)$', views.especialista_avaliar, name='especialista_avaliar'),
     url(r'^especialista/avaliar/editar/(?P<pk>\d+)$', views.especialista_editar_avaliacao, name='especialista_editar_avaliacao'),
     url(r'^especialista/avaliar/lista/(?P<pk>\d+)$', views.especialista_listar_avaliacoes, name='especialista_listar_avaliacoes'),
+    url(r'^especialista/confirmar/lista/(?P<pk>\d+)$', views.especialista_listar_confirmacoes, name='especialista_listar_confirmacoes'),
+    url(r'^especialista/confirmar/(?P<pk>\d+)$', views.especialista_confirmar_avaliacao, name='especialista_confirmar_avaliacao'),
 	# Admin
     url(r'^admin/$', views.admin_index, name='admin_index'),
     url(r'^admin/ordem/problemas/$', views.admin_ordem_problemas, name='admin_ordem_problemas'),

@@ -29,7 +29,7 @@
 		<ol>
 			<li> Forneçer seus critérios de avaliação. Utilize o botão <button type="button" class="btn btn-sm btn-primary">Visualizar</button> para observar o enunciado do problema e fornecer seus critérios de avaliação
 			<li> Realizar um conjunto de avaliações. Utilize o botão <button type="button" class="btn btn-sm btn-primary">Avaliar submissões</button> para ver os códigos submetidos e proceder com a avaliação
-			<li> Confirmar notas, ou seja, confirmar se as notas geradas estão corretas de acordo com sua avaliação. (Funcionalidade ainda desablitada)
+			<li> Confirmar notas, ou seja, confirmar se as notas geradas estão corretas de acordo com sua avaliação. Utilize o botão <button type="button" class="btn btn-sm btn-primary">Confirmar notas</button> para ver as avaliações geradas e proceder com o processo de confirmação
 			<li> Confirmar feedback, ou seja, confirmar se o feedback textual gerado é aplicável ao código de acordo com sua avaliação. (Funcionalidade ainda desablitada)
 		</ol>
 		<li> <b>O progresso de suas ações ficará salvo, assim é possível proceder com a avaliação em momentos distintos</b>
@@ -86,10 +86,10 @@
 						<a href={% url "programacao:especialista_listar_avaliacoes" problema.id %}>
 						<button type="button" class="btn btn-sm btn-primary">Avaliar submissões</button>
 						</a>
-						<!--
-						<a href="">
+						<a href={% url "programacao:especialista_listar_confirmacoes" problema.id %}>
 						<button type="button" class="btn btn-sm btn-primary">Confirmar notas</button>
 						</a>
+						<!--
 						<a href="">
 						<button type="button" class="btn btn-sm btn-primary">Confirmar feedback</button>
 						</a>
@@ -108,4 +108,5 @@
 	{% endif %}
 
 {% endblock %}
+
 

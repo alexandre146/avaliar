@@ -63,17 +63,16 @@ class AvaliacaoEspecialistaForm(ModelForm):
             'observacao': forms.Textarea(attrs={'rows':5, 'cols':200}),
         }
 
-'''
-class NovaAvaliacaoEspecialistaForm(ModelForm):
+
+class AvaliacaoEspecialistaConfirmarNotaForm(ModelForm):
     class Meta:
         model = AvaliacaoEspecialista
-        fields = ['nota', 'feedback', 'observacao']
+        fields = ['nota', 'nova_nota']
         widgets = {
             'nota': forms.NumberInput(attrs={'step': "0.5"}),
-            'feedback': forms.Textarea(attrs={'rows':5, 'cols':200}),
-            'observacao': forms.Textarea(attrs={'rows':5, 'cols':200}),
+            'nova_nota': forms.NumberInput(attrs={'step': "0.5"}),
         }
-'''
+
 
 class ProblemaForm(ModelForm):
     class Meta:

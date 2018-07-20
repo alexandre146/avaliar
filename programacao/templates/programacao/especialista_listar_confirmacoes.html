@@ -1,0 +1,161 @@
+{% extends "base_especialista_index.html" %}
+
+{% load bootstrap %}
+
+{% block page_title %} Descrição do problema e suas submissões {% endblock %}
+
+{% block main %}
+
+<a href={% url "programacao:especialista_index"%}>
+<button type="button" class="btn btn-sm btn-info"><i class="fa fa-chevron-left fa-fw"></i> Voltar</button>
+</a>
+<a href={% url "programacao:especialista_visualizar_problema" problema.id %}>
+<button type="button" class="btn btn-sm btn-primary">Descrição do problema: {{problema.nome}}</button>
+</a>
+<a href="#avaliacoes_pendentes">
+<button type="button" class="btn btn-sm btn-primary">Avaliacoes pendentes</button>
+</a>
+<a href="#avaliacoes_realizadas">
+<button type="button" class="btn btn-sm btn-success">Avaliacoes realizadas</button>
+</a>
+</br></br>
+
+<div class="alert alert-info">
+	Um conjunto de avaliações foi gerado com base nas avaliações fornecidas. <br>
+	Nesta etapa é necessário confirmar se a avaliação gerada é correta, ou se outra avaliação seria necessária. <br><br>
+  <strong>Instruções: </strong> 
+    <ol>
+        <li>Um conjunto de confirmações pendentes é apresentado, realize a confirmação da avaliação do código clicando no botão <button type="button" class="btn btn-sm btn-primary">Observar avalição</button> e proceda de acordo com as instruções
+        <li>Um conjunto de confirmações realizadas é apresentado ao final da página. <!--, caso deseje alterar a avaliação do código, clique no botão "Editar" e proceda de acordo com as instruções-->
+    </ol>
+</div>
+
+    <div class="row" id="avaliacoes_pendentes">
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <i class="fa fa-edit fa-fw"></i> Confirmações pendentes
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                        {% if codigos_pendentes %}
+						<div class="table-responsive">
+							<table class="table table-bordered table-hover table-striped">
+								<thead>
+									<tr>
+									<th>#</th>
+									<th>Arquivo</th>
+									<th></th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for avaliacao in codigos_pendentes %}
+									{% if forloop.counter == 1 %}
+									<tr>
+										<td class="col-md-1">{{ forloop.counter }}</td>
+										<td class="col-md-6">{{ avaliacao.codigo.arquivo }}</td>
+										<td class="col-md-2"> 
+										<a href={% url "programacao:especialista_confirmar_avaliacao" avaliacao.id %}>
+										<button type="button" class="btn btn-sm btn-primary">Observar avalição</button>
+										</a>
+										</td>
+									</tr>
+									{% else %}
+									<tr>
+										<td class="col-md-1">{{ forloop.counter }}</td>
+										<td class="col-md-6">{{ avaliacao.codigo.arquivo }}</td>
+										<td class="col-md-2"> 
+										<a href={% url "programacao:especialista_confirmar_avaliacao" avaliacao.id %}>
+										<button type="button" class="btn btn-sm btn-primary">Observar avalição</button>
+										</a>
+										</td>
+									</tr>
+									{% endif %}
+								{% endfor %}
+								</tbody>
+							</table>
+						</div>
+						<!-- /.table-responsive -->
+						{% else %}
+							<div class="alert alert-info alert-dismissable">
+							Nenhuma confirmação de avaliação pendente!
+							</div>
+						{% endif %}
+                        </div>
+                        <!-- /.col-lg-4 (nested) -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+
+    <div class="row" id="avaliacoes_realizadas">
+        <div class="col-lg-12">
+            <div class="panel panel-green">
+                <div class="panel-heading">
+                    <i class="fa fa-edit fa-fw"></i> Confirmações realizadas
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+						{% if codigos_confirmados %}
+						<div class="table-responsive">
+							<table class="table table-bordered table-hover table-striped">
+								<thead>
+									<tr>
+									<th>#</th>
+									<th>Arquivo</th>
+									<th>Nota / Nova nota</th>
+									<th></th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for avaliacao in codigos_confirmados %}
+								<tr>
+									<td class="col-md-1">{{ forloop.counter }}</td>
+									<td class="col-md-3">{{ avaliacao.codigo.arquivo }}</td>
+									<td class="col-md-3">{{ avaliacao.nota|floatformat:2 }} / {{ avaliacao.nova_nota|floatformat:2 }}</td>
+									<td class="col-md-2"> 
+									<!--<a href={% url "programacao:especialista_editar_avaliacao" avaliacao.id %}>
+									<button type="button" class="btn btn-sm btn-primary">Editar</button>
+									</a>-->
+									</td>
+								</tr>
+								{% endfor %}
+								</tbody>
+							</table>
+						</div>
+						<!-- /.table-responsive -->
+						{% else %}
+							<div class="alert alert-info alert-dismissable">
+							Nenhuma confirmação de avaliação realizada!
+							</div>
+						{% endif %}
+                        </div>
+                        <!-- /.col-lg-4 (nested) -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+
+<a href={% url "programacao:especialista_index"%}>
+<button type="button" class="btn btn-sm btn-info"><i class="fa fa-chevron-left fa-fw"></i> Voltar</button>
+</a>
+</br></br>
+
+{% endblock %}
+

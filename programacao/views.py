@@ -8,6 +8,11 @@ import random
 
 #from utils import *
 
+# KMEANS
+import numpy as np
+from scipy.cluster.vq import kmeans, vq
+
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -19,8 +24,8 @@ from django.db import connection, transaction
 from django.db.transaction import commit
 from django.shortcuts import render, redirect, get_object_or_404
 
-from programacao.forms import EspecialistaForm, RegistroForm, UserEditForm, AvaliacaoEspecialistaForm, ProblemaForm, CriterioBasicoEspecialistaForm, CriterioDecisaoEspecialistaForm, CriterioRepeticaoEspecialistaForm
-from programacao.models import Problema, Codigo, Especialista, AvaliacaoEspecialista, Agrupamento, AvaliacaoAgrupamento, Similaridade, CriterioEspecialista
+from programacao.forms import EspecialistaForm, RegistroForm, UserEditForm, AvaliacaoEspecialistaForm, AvaliacaoEspecialistaConfirmarNotaForm, ProblemaForm, CriterioBasicoEspecialistaForm, CriterioDecisaoEspecialistaForm, CriterioRepeticaoEspecialistaForm
+from programacao.models import Problema, Codigo, Especialista, AvaliacaoEspecialista, Agrupamento, AvaliacaoAgrupamento, Similaridade, CriterioEspecialista, Grupo, GrupoCodigo
 
 def index(request, template_name='programacao/index.html'):
     if request.method=='POST':
@@ -280,10 +285,10 @@ def admin_problema_publicar_codigos(request, pk, template_name='programacao/admi
     qtd_codigos = 10
     codigos = Codigo.objects.filter(problema_id=problema.id)
     for codigo in codigos :
-    	if (i < qtd_codigos) :
+        if (i < qtd_codigos) :
             codigo.publicar = True
         else:
-        	codigo.publicar = False
+            codigo.publicar = False
         i = i + 1
         codigo.save()
 
@@ -428,6 +433,7 @@ def especialista_listar_avaliacoes(request, pk, template_name='programacao/espec
     data['codigos_avaliados'] = avaliacao_realizada_list
     return render(request, template_name, data)
 
+
 @login_required
 @permission_required('programacao.view_especialista')#@permission_required('programacao.is_especialista')
 def especialista_avaliar(request, pk, template_name='programacao/especialista_avaliar.html'):
@@ -472,6 +478,177 @@ def especialista_editar_avaliacao(request, pk, template_name='programacao/especi
         if form.is_valid():
             form.save()
             return redirect('programacao:especialista_listar_avaliacoes', pk=avaliacao.codigo.problema_id)
+
+    data = {}
+    data['avaliacao'] = avaliacao
+    data['source'] = source
+    data['form'] = form
+    return render(request, template_name, data)
+
+
+@login_required
+@permission_required('programacao.view_especialista')
+def especialista_listar_confirmacoes(request, pk, template_name='programacao/especialista_listar_confirmacoes.html'):
+    problema = get_object_or_404(Problema, pk=pk)
+
+    user = request.user
+    especialista = Especialista.objects.get(user_id=user.id)
+
+    # avaliacoes ainda nao foram concluidas
+    avaliacoes_realizadas = AvaliacaoEspecialista.objects.filter(codigo__problema=problema,especialista=especialista,realizada=True).count()
+    if (avaliacoes_realizadas < 10) :
+        messages.add_message(request, messages.ERROR, 'É necessário concluir as avaliações antes de realizar confirmações')
+        return redirect('programacao:especialista_listar_avaliacoes', pk=problema.id)
+
+    grupos = Grupo.objects.filter(problema=problema, especialista=especialista)
+    if (len(grupos) == 0) : # nenhum grupo foi criado...
+        # Agrupar... execute Kmeans e crie os grupos
+        n_clusters = 10 # K of Kmeans
+
+        criterios = None
+        try :
+            criterios = CriterioEspecialista.objects.get(problema=problema, especialista=especialista)
+        except CriterioEspecialista.DoesNotExist:
+            criterios = problema.get_criterios()
+
+        ids = []
+        inputs = []
+        codigos = Codigo.objects.filter(problema=problema)
+        # selecao de metricas com base nos criterios
+        for code in codigos :
+            ids.append(code.id)
+            temp = []
+            # Criterios nao utilizados: criterio_funcoes_io  / criterio_eficiencia_tempo      
+            #if (criterios.criterio_sintaxe) :
+            #    temp.append(code.medida_corretude_sintatica)
+            if (criterios.criterio_funcional) :
+                temp.append(code.medida_corretude_funcional)
+            if (criterios.criterio_estrutura_decisao or criterios.criterio_qtd_decisoes or criterios.criterio_profundidade_decisao or criterios.criterio_decisoes_aninhadas or criterios.criterio_decisoes_compostas or criterios.criterio_estrutura_repeticao or criterios.criterio_qtd_est_repeticao or criterios.criterio_profundidade_repeticao or criterios.criterio_repeticoes_aninhadas) :
+                temp.append(code.medida_complexity)
+            if (criterios.criterio_qtd_instrucoes or criterios.criterio_tamanho) :
+                temp.append(code.medida_loc)
+            #if (criterios.criterio('lloc')) :
+            #    temp.append(code.medida_lloc)
+            if (criterios.criterio_qtd_instrucoes or criterios.criterio_tamanho or criterios.criterio_qtd_instrucoes) :   
+                temp.append(code.medida_sloc)
+            #if (criterios.criterio_comentarios) :
+            #    temp.append(code.medida_comments)
+            #if (criterios.criterio_comentarios) :
+            #    temp.append(code.medida_multi)
+            #if (criterios.criterio_comentarios) :
+            #    temp.append(code.medida_blank)
+            #if (criterios.criterio_comentarios) :    
+            #    temp.append(code.medida_single_comments)
+            if (criterios.criterio_qtd_atribuicoes or criterios.criterio_operadores or criterios.criterio_qtd_instrucoes or criterios.criterio_operadores_logicos or criterios.criterio_qtd_operadores_logicos) :
+                temp.append(code.medida_distinct_operators)
+            if (criterios.criterio_qtd_variaveis or criterios.criterio_eficiencia_memoria or criterios.criterio_qtd_instrucoes or criterios.criterio_qtd_condicoes) :
+                temp.append(code.medida_distinct_operands)
+            if (criterios.criterio_qtd_atribuicoes or criterios.criterio_operadores or criterios.criterio_qtd_instrucoes or criterios.criterio_operadores_logicos or criterios.criterio_qtd_operadores_logicos) :
+                temp.append(code.medida_total_number_operators)
+            if (criterios.criterio_qtd_variaveis or criterios.criterio_eficiencia_memoria or criterios.criterio_qtd_instrucoes or criterios.criterio_qtd_condicoes)  :    
+                temp.append(code.medida_total_number_operands)
+            if (criterios.criterio_qtd_instrucoes or criterios.criterio_tamanho or criterios.criterio_qtd_condicoes) :
+                temp.append(code.medida_vocabulary)
+            if (criterios.criterio_tamanho) :
+                temp.append(code.medida_length)
+            #if (criterios.criterio_tamanho) :
+            #    temp.append(code.medida_calculated_length)
+            if (criterios.criterio_tamanho) :
+                temp.append(code.medida_volume)
+            #if (criterios.criterio('difficulty')) :
+            #    temp.append(code.medida_difficulty)
+            #if (criterios.criterio('effort')) :         
+            #    temp.append(code.medida_effort)
+            #if (criterios.criterio('time')) :
+            #    temp.append(code.medida_time)
+            #if (criterios.criterio('bugs')) :
+            #    temp.append(code.medida_bugs)
+            #if (criterios.criterio('mi')) :
+            #    temp.append(code.medida_mi)
+            if (criterios.criterio_similaridade_ref) :
+                temp.append(code.similaridade_jaccard)
+            if (criterios.criterio_similaridade_ref) :
+                temp.append(code.similaridade_text)
+            if (criterios.criterio_similaridade_ref) :
+                temp.append(code.similaridade_tree)
+
+            inputs.append(temp)
+
+        # executando Kmeans sobre o vetor de propriedades
+        kmeans_ids = np.array(ids) # codigos_ids
+        kmeans_input = np.array(inputs) # codigos_medidas
+
+        #clusters , retorna distancia = kameans(base de dados e numero de centroids)
+        centroids,_= kmeans(kmeans_input, n_clusters)
+        idx,_ = vq(kmeans_input, centroids)
+
+        grupos = list(idx)
+        # criando grupos
+        for e in set(grupos) :
+            Grupo.objects.create(num_idx=e,problema=problema,especialista=especialista)
+
+        for i in range(len(ids)):
+            codigo = Codigo.objects.get(id=ids[i])
+            grupo = Grupo.objects.get(num_idx=grupos[i],problema=problema,especialista=especialista)
+            # Identifianco o grupo ao qual pertence um codigo
+            GrupoCodigo.objects.create(grupo=grupo,codigo=codigo,especialista=especialista)
+            #print("%d %d" % (codigo.id, grupos[i]))
+
+        # Gerar notas...
+        for g in grupos :
+            codigos_no_grupo = GrupoCodigo.objects.filter(grupo__num_idx=g,codigo__problema=problema,especialista=especialista)
+
+            codigos_com_avaliacao = []
+            codigos_sem_avaliacao = []
+            for cg in codigos_no_grupo :
+                avaliacao_codigo = AvaliacaoEspecialista.objects.get(codigo=cg.codigo,especialista=especialista)
+                if (avaliacao_codigo.realizada) :
+                    codigos_com_avaliacao.append(avaliacao_codigo)
+                else :
+                    codigos_sem_avaliacao.append(avaliacao_codigo)
+
+            for csa in codigos_sem_avaliacao :
+                if (len(codigos_com_avaliacao) > 0) :
+                    csa.nota = codigos_com_avaliacao[0].nota
+                else :
+                    csa.nota = (csa.codigo.distancia(especialista)).nota
+                csa.gerada = True
+                csa.save()
+
+    #else :
+
+    codigos_confirmados = AvaliacaoEspecialista.objects.filter(codigo__problema=problema,especialista=especialista,codigo__publicar_confirmar=True,confirmar_nota=True,realizada=False).order_by('ordem_codigo')
+    codigos_pendentes = AvaliacaoEspecialista.objects.filter(codigo__problema=problema,especialista=especialista,codigo__publicar_confirmar=True,confirmar_nota=False,realizada=False).order_by('ordem_codigo')
+
+    data = {}
+    #data['form'] = form
+    data['problema'] = problema
+    data['codigos_pendentes'] = codigos_pendentes
+    data['codigos_confirmados'] = codigos_confirmados
+    return render(request, template_name, data)
+
+
+@login_required
+@permission_required('programacao.view_especialista')
+def especialista_confirmar_avaliacao(request, pk, template_name='programacao/especialista_confirmar.html'):
+#    user = request.user
+#    especialista = Especialista.objects.get(user_id=user.id)
+#    codigo = Codigo.objects.get(id=pk)
+#    avaliacao = AvaliacaoEspecialista.objects.get(codigo=codigo, especialista=especialista)
+    avaliacao = get_object_or_404(AvaliacaoEspecialista, pk=pk)
+    #form = AvaliacaoEspecialistaForm(request.POST or None, instance=avaliacao)
+    form = AvaliacaoEspecialistaConfirmarNotaForm(request.POST or None, instance=avaliacao)
+
+    source = avaliacao.codigo.display_text()
+    
+    if request.method=='POST':
+        if form.is_valid():
+            avaliacao_especialista = form.save(commit=False)
+            avaliacao_especialista.realizada = False
+            avaliacao_especialista.gerada = True
+            avaliacao_especialista.confirmar_nota = True
+            avaliacao_especialista.save()
+            return redirect('programacao:especialista_listar_confirmacoes', pk=avaliacao.codigo.problema_id)
 
     data = {}
     data['avaliacao'] = avaliacao

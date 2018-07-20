@@ -1,0 +1,135 @@
+{% extends "base_especialista_index.html" %}
+
+{% load bootstrap %}
+
+{% block page_title %} Avaliar código {% endblock %}
+
+{% block main %}
+
+
+
+{% if codigo %}
+
+<a href={% url "programacao:especialista_listar_confirmacoes" codigo.problema.id %}>
+<button type="button" class="btn btn-sm btn-info"><i class="fa fa-chevron-left fa-fw"></i> Voltar</button>
+</a>
+</br></br>
+
+<div class="row">
+    <div class="col-lg-12">
+		<div class="alert alert-info">
+          <b>Instruções:</b>
+		  <ul>
+            <li> Observe o enunciado e o código exibido como uma solução proposta por um aluno. Caso deseje realize o download do código clicando sobre o botão `Download' (Obs.: a configuração de seu navegador pode apenas exibir o código em outra janela)
+            <li> <b>Avaliação:</b> deve corresponder a um valor no intervalo de 0 (zero) a 10 (dez)
+            <li> <b>Feedback:</b>b> deve corresponder a informação que desejasse enviar para o aluno que produziu o código. Esta informação pode auxiliar o aluno na melhoria de sua solução.
+            <li> <b>Observação:</b> Para quaisquer casos em que encontrar uma dificuldade para realizar a avaliação, favor descreer a dificuldade no campo observação. Essa informação será enviada ao pesquisador.
+          </ul>
+
+		</div>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Código: {{codigo.arquivo}}
+            </div>
+            
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+            <b>Enunciado do problema:</b> {{problema.enunciado|safe}}
+            <b>Linguagem:</b> {{codigo.linguagem}}
+			<!-- Source code -->
+			<pre class="python">{{ source }}</pre>
+			<a href="{{ codigo.get_abs_path }}" target="blank">
+			<button type="button" class="btn btn-sm btn-primary">Download</button>
+			</a><br><br>
+
+                        <div class="form-group">
+                            <form method="post">
+                            {% csrf_token %}
+                                {{ form|bootstrap }}
+                                <button type="submit" class="btn btn-sm btn-success">Salvar</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /.col-lg-12 (nested) -->
+                </div>
+                <!-- /.row (nested) -->
+            </div>
+            <!-- /.panel-body -->
+            <!-- /.panel-footer 
+            <div class="panel-footer">
+            </div> 
+            <!-- /.panel-footer -->
+        </div>
+        <!-- /.panel -->
+        
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+{% endif %}
+
+{% if avaliacao %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Código: {{avaliacao.codigo.arquivo}}
+            </div>
+            
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+			<!-- Source code -->
+			<pre class="python">{{ source }}</pre>
+			<a href="{{ avaliacao.codigo.get_abs_path }}" target="blank">
+			<button type="button" class="btn btn-sm btn-primary">Download</button>
+			</a><br><br>
+                        <div class="form-group">
+                            <form method="post">
+                            {% csrf_token %}
+                                {{ form|bootstrap }}
+                                <a href={% url "programacao:especialista_confirmar_avaliacao" avaliacao.id %}>
+                                <button title='A nota gerada está correta' type="submit" class="btn btn-sm btn-success">Confirmar nota</button>
+                                </a>
+                                <!--<a href={% url "programacao:especialista_confirmar_nova_avaliacao" 
+                                avaliacao.id %}>-->
+                                <a href={% url "programacao:especialista_confirmar_avaliacao" avaliacao.id %}>
+                                <button title='A nota gerada NÃO é correta, é necessário salvar a nova nota' type="submit" class="btn btn-sm btn-danger">Salvar nova nota</button>
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /.col-lg-12 (nested) -->
+                </div>
+                <!-- /.row (nested) -->
+            </div>
+            <!-- /.panel-body -->
+            <!-- /.panel-footer 
+            <div class="panel-footer">
+            </div> 
+            <!-- /.panel-footer -->
+        </div>
+        <!-- /.panel -->
+        
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<a href={% url "programacao:especialista_listar_confirmacoes" avaliacao.codigo.problema_id %}>
+<button type="button" class="btn btn-sm btn-info"><i class="fa fa-chevron-left fa-fw"></i> Voltar</button>
+</a>
+</br></br>
+
+{% endif %}
+
+{% endblock %}
+
