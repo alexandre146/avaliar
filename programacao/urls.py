@@ -27,5 +27,5 @@ urlpatterns = patterns('',
     url(r'^admin/ordem/problemas/$', views.admin_ordem_problemas, name='admin_ordem_problemas'),
     url(r'^admin/importar/problemas/$', views.admin_importar_problemas, name='admin_importar_problemas'),
     url(r'^admin/editar/problema/(?P<pk>\d+)$', views.admin_editar_problema, name='admin_editar_problema'),
-    url(r'^admin/problema/publicar/codigo/(?P<pk>\d+)$', views.admin_problema_publicar_codigos, name='admin_problema_publicar_codigos'),   
+    url(r'^admin/problema/publicar/codigo/(?P<pk>\d+)$', views.admin_problema_publicar_codigos, name='admin_problema_publicar_codigos'),
 )

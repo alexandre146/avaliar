@@ -517,7 +517,7 @@ def especialista_listar_confirmacoes(request, pk, template_name='programacao/esp
         for code in codigos :
             ids.append(code.id)
             temp = []
-            # Criterios nao utilizados: criterio_funcoes_io  / criterio_eficiencia_tempo      
+            # Criterios nao utilizados: criterio_funcoes_io  / criterio_eficiencia_tempo
             #if (criterios.criterio_sintaxe) :
             #    temp.append(code.medida_corretude_sintatica)
             if (criterios.criterio_funcional) :
@@ -528,7 +528,7 @@ def especialista_listar_confirmacoes(request, pk, template_name='programacao/esp
                 temp.append(code.medida_loc)
             #if (criterios.criterio('lloc')) :
             #    temp.append(code.medida_lloc)
-            if (criterios.criterio_qtd_instrucoes or criterios.criterio_tamanho or criterios.criterio_qtd_instrucoes) :   
+            if (criterios.criterio_qtd_instrucoes or criterios.criterio_tamanho or criterios.criterio_qtd_instrucoes) :
                 temp.append(code.medida_sloc)
             #if (criterios.criterio_comentarios) :
             #    temp.append(code.medida_comments)
@@ -536,7 +536,7 @@ def especialista_listar_confirmacoes(request, pk, template_name='programacao/esp
             #    temp.append(code.medida_multi)
             #if (criterios.criterio_comentarios) :
             #    temp.append(code.medida_blank)
-            #if (criterios.criterio_comentarios) :    
+            #if (criterios.criterio_comentarios) :
             #    temp.append(code.medida_single_comments)
             if (criterios.criterio_qtd_atribuicoes or criterios.criterio_operadores or criterios.criterio_qtd_instrucoes or criterios.criterio_operadores_logicos or criterios.criterio_qtd_operadores_logicos) :
                 temp.append(code.medida_distinct_operators)
@@ -544,7 +544,7 @@ def especialista_listar_confirmacoes(request, pk, template_name='programacao/esp
                 temp.append(code.medida_distinct_operands)
             if (criterios.criterio_qtd_atribuicoes or criterios.criterio_operadores or criterios.criterio_qtd_instrucoes or criterios.criterio_operadores_logicos or criterios.criterio_qtd_operadores_logicos) :
                 temp.append(code.medida_total_number_operators)
-            if (criterios.criterio_qtd_variaveis or criterios.criterio_eficiencia_memoria or criterios.criterio_qtd_instrucoes or criterios.criterio_qtd_condicoes)  :    
+            if (criterios.criterio_qtd_variaveis or criterios.criterio_eficiencia_memoria or criterios.criterio_qtd_instrucoes or criterios.criterio_qtd_condicoes) :
                 temp.append(code.medida_total_number_operands)
             if (criterios.criterio_qtd_instrucoes or criterios.criterio_tamanho or criterios.criterio_qtd_condicoes) :
                 temp.append(code.medida_vocabulary)
@@ -556,7 +556,7 @@ def especialista_listar_confirmacoes(request, pk, template_name='programacao/esp
                 temp.append(code.medida_volume)
             #if (criterios.criterio('difficulty')) :
             #    temp.append(code.medida_difficulty)
-            #if (criterios.criterio('effort')) :         
+            #if (criterios.criterio('effort')) :
             #    temp.append(code.medida_effort)
             #if (criterios.criterio('time')) :
             #    temp.append(code.medida_time)
@@ -639,7 +639,7 @@ def especialista_confirmar_avaliacao(request, pk, template_name='programacao/esp
     form = AvaliacaoEspecialistaConfirmarNotaForm(request.POST or None, instance=avaliacao)
 
     source = avaliacao.codigo.display_text()
-    
+
     if request.method=='POST':
         if form.is_valid():
             avaliacao_especialista = form.save(commit=False)
@@ -673,7 +673,7 @@ def especialista_listar_confirmacoes_feedback(request, pk, template_name='progra
     grupos = Grupo.objects.filter(problema=problema,especialista=especialista)
     if (len(grupos) == 0) : # grupos nao foram criados...
         messages.add_message(request, messages.ERROR, 'É necessário confirmar as notas antes de realizar as confirmações de feedback')
-        return redirect('programacao:especialista_listar_avaliacoes', pk=problema.id)        
+        return redirect('programacao:especialista_listar_avaliacoes', pk=problema.id)
     else : # grupos foram criados...
         # Gerar feedbacks...
         for g in grupos :
@@ -715,8 +715,7 @@ def especialista_confirmar_avaliacao_feedback(request, pk, template_name='progra
     avaliacao = get_object_or_404(AvaliacaoEspecialista, pk=pk)
     form = AvaliacaoEspecialistaConfirmarFeedbackForm(request.POST or None, instance=avaliacao)
 
-    source = avaliacao.codigo.display_text()
-    
+    source = avaliacao.codigo.display_text() 
     if request.method=='POST':
         if form.is_valid():
             avaliacao_especialista = form.save(commit=False)
@@ -724,7 +723,6 @@ def especialista_confirmar_avaliacao_feedback(request, pk, template_name='progra
             avaliacao_especialista.gerada = True
             avaliacao_especialista.confirmar_feedback = True
             avaliacao_especialista.save()
-            
             return redirect('programacao:especialista_listar_confirmacoes_feedback', pk=avaliacao.codigo.problema_id)
 
     data = {}
